@@ -24,10 +24,11 @@ OBJS := \
 	objects.o \
 	raytracing.o \
 	main.o
+astyle:
+	astyle --style=kr --indent=spaces=4 --indent-switches --suffix=none *.[ch]
 
 %.o: %.c
 	$(CC) $(CFLAGS) -c -o $@ $<
-
 
 $(EXEC): $(OBJS)
 	$(CC) -o $@ $^ $(LDFLAGS)
@@ -47,6 +48,14 @@ use-models.h: models.inc Makefile
 check: $(EXEC)
 	@./$(EXEC) && diff -u baseline.ppm out.ppm || (echo Fail; exit)
 	@echo "Verified OK"
+
+test:
+	perf stat --repeat 10 \
+		-e cache-misses,cache-references,instructions,cycles \
+		./raytracing
+
+time-check:
+	gprof -b raytracing gmon.out | less
 
 clean:
 	$(RM) $(EXEC) $(OBJS) use-models.h \
