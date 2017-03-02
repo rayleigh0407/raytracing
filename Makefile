@@ -12,7 +12,7 @@ CC ?= gcc
 CFLAGS = \
 	-std=gnu99 -Wall -O0 -g
 LDFLAGS = \
-	-lm
+	-lpthread -lm
 
 ifeq ($(strip $(PROFILE)),1)
 PROF_FLAGS = -pg
@@ -24,12 +24,9 @@ OBJS := \
 	objects.o \
 	raytracing.o \
 	main.o
-astyle:
-	astyle --style=kr --indent=spaces=4 --indent-switches --suffix=none *.[ch]
 
 %.o: %.c
 	$(CC) $(CFLAGS) -c -o $@ $<
-
 $(EXEC): $(OBJS)
 	$(CC) -o $@ $^ $(LDFLAGS)
 
@@ -60,3 +57,6 @@ time-check:
 clean:
 	$(RM) $(EXEC) $(OBJS) use-models.h \
 		out.ppm gmon.out
+astyle:
+	astyle --style=kr --indent=spaces=4 --indent-switches --suffix=none *.[ch]
+init: clean astyle
